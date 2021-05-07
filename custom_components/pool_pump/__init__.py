@@ -154,9 +154,16 @@ class PoolPumpManager:
         self._pool_controler = AbacusFilteringDuration(schedule_config=schedule_config)
 
         # TODO: check when the schedule for next day is computed
-        noon = dt_util.as_local(
-            get_astral_event_date(self._hass, "solar_noon", self._now.date())
-        )
+        try:
+            # Astral v1
+            noon = dt_util.as_local(
+                get_astral_event_date(self._hass, "solar_noon", self._now.date())
+            )
+        except AttributeError:
+            # Astral v2
+            noon = dt_util.as_local(
+                get_astral_event_date(self._hass, "noon", self._now.date())
+            )
         _LOGGER.debug("Solar noon is at: {}".format(noon))
 
         self._total_duration_in_hours = self._build_parameters()
